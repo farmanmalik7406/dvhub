@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+{% block content %}
+<div class="container">
+
+    <div class="card text-white bg-info">
+
+      <div class="card-body">
+        <h4 class="card-title">TODO</h4>
+        <p class="card-text">
+            <div class="gap-2 p-3 ">
+                 <!-- Button trigger modal -->
+              <button type="button" id="add_todo" class="btn btn-primary mx-2" data-bs-toggle="modal" data-bs-target="#editModal" style="width:100px">ADD</button>
+
+            </div>
+        </p>
+
+
+
+        <!-- Modal -->
+
+
+        <div class="container-fluid">
+            Records : {{data|length}}
+            {% for d in data %}
+                <div class="card text-dark m-3" style="width : 600px">
+
+                  <div class="card-body">
+                    <h4 class="card-title">{{d.title}}</h4>
+                    <p class="card-text">{{d.description}}
+                    </p>
+                    <h3>Upcoming :  {{d.create_date}}</h3>
+                      <h4> created on :   {{d.on_date}} </h4>
+                      <form class="editForm">
+                        <input type="hidden" name="id" value="{{d.id}}" />
+                    <button type="submit" class="btn btn-success mx-2" data-bs-toggle="modal" data-bs-target="#editModal"  style="width:100px">EDIT</button>
+                    </form>
+                    <form id="deleteForm" method="get" action="todo/delete/{{d.id}}">
+                        <input type="hidden" name="id" value="{{d.id}}" />
+                    <button type="submit" name="" id="" class="btn btn-danger mx-2" style="width:100px">DELETE</button>
+                      </form>
+                  </div>
+                </div>
+            {% endfor %}
+        </div>
+      </div>
+    </div>
+</div>
+
+<!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editTodo" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+                <div class="modal-header">
+                        <h5 class="modal-title" id="form_title">Edit Todo</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+            <form id="todo_form">
+            <div class="modal-body">
+                {% csrf_token %}
+                <div class="container-fluid " id="edit_form" >
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" id="sub_btn" class="btn btn-primary">Update</button>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock content %}
+
+{% block script %}
+<script>
+    $( function() {
+        function datepicker_attach(){
+            $( ".datepicker" ).datepicker();
+        }
+        datepicker_attach()
+        add_form  = "{{form | escapejs}}"
+        $('.editForm').on("submit",function(e){
+            e.preventDefault()
+            const formData = new FormData(this)
+            var id = formData.get("id")
+            for (const [key,value] of formData){
+                console.log(key,value)
+            }
+            $.get("todo/get/"+formData.get("id"),function(data,status){
+                html = '<div class="mb-3"><label for="" class="form-label">ID : '+id+'</label><input type="hidden" class="form-control" name="pk_todo" id="" aria-describedby="helpId" value="'+id+'" placeholder=""></div>'
+                html += data
+                $("#edit_form").html(html)
+                $("#form_title").html("Edit")
+                $("#sub_btn").html("Update")
+                datepicker_attach()
+                $("#editModal").show()
+                $("#todo_form").attr("method","post")
+                $("#todo_form").attr("action","/updateTodo/")
+
+            })
+
+        })
+        $("#add_todo").on("click",function(e){
+            $("#form_title").html("ADD")
+            $("#sub_btn").html("ADD")
+            $("#edit_form").html(add_form)
+            $("#todo_form").attr("method","post")
+            $("#todo_form").attr("action","")
+            datepicker_attach()
+        })
+
+      } );
+</script>
+{% endblock script %}
+
