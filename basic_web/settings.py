@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-gvt5$0fv#yiz7ddcd*4_it^%$36*vm33!x+zp%bx$5vqzbn4zm
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://dvhub.herokuapp.com/','https://127.0.0.1/']
+ALLOWED_HOSTS = ['dvhub.herokuapp.com','127.0.0.1']
 
 
 # Application definition
